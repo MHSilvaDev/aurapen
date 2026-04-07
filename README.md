@@ -2,6 +2,8 @@
 
 Uma landing page conceitual e altamente interativa desenvolvida para demonstrar técnicas avançadas de Front-End, com foco em animações de alta performance, manipulação de DOM e experiências imersivas de UI/UX.
 
+<img src="./print_site_aurapen.png" alt="Preview do site">
+
 ## 🎯 Sobre o Projeto
 
 O "Aura Pen" é um projeto de portfólio focado na intersecção entre design minimalista e engenharia de software no front-end. O objetivo principal foi criar uma experiência de rolagem (scroll) cinematográfica, fugindo do layout estático tradicional e explorando a renderização gráfica via Canvas combinada com bibliotecas de animação modernas.
@@ -26,6 +28,3 @@ O "Aura Pen" é um projeto de portfólio focado na intersecção entre design mi
 
 Devido ao uso da API do Canvas para carregar imagens locais, rodar este projeto apenas abrindo o arquivo `index.html` no navegador pode causar erros de **CORS**. Siga os passos:
 
-1. Clone este repositório:
-   ```bash
-   git clone [https://github.com/SEU-USUARIO/aura-pen.git](https://github.com/SEU-USUARIO/aura-pen.git)
