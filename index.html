@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Pen - O Futuro da Escrita</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <!-- SplitType -->
+    <script src="https://unpkg.com/split-type"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            500: '#78716c',
+                            600: '#57534e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        },
+                        'surface-light': '#EAEAE5',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --surface-color: #EAEAE5;
+        }
+
+        body,
+        html {
+            background-color: var(--surface-color);
+            color: #1C1917;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overscroll-behavior: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: #1C1917;
+            color: white;
+        }
+
+        /* Lenis Setup */
+        html.lenis {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        .scroll-container {
+            height: 400vh;
+        }
+
+        .hero-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .noise {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .btn-beam {
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            display: inline-flex;
+        }
+
+        .btn-beam::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            z-index: -1;
+            background: conic-gradient(from 90deg at 50% 50%, #E2E8F0 0%, #000000 50%, #E2E8F0 100%);
+            animation: spin 4s linear infinite;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn-beam:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-beam-content {
+            background-color: #1c1917;
+            color: white;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-beam:hover .btn-beam-content {
+            background-color: #292524;
+        }
+
+        /* Canvas logic */
+        #hero-canvas {
+            will-change: transform;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .char {
+            transform: translateY(115%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .word {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .scroll-indicator:hover {
+            opacity: 1;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, #1C1917, transparent);
+            animation: scrollLine 2s infinite ease-in-out;
+        }
+
+        @keyframes scrollLine {
+            0% {
+                transform: scaleY(0);
+                transform-origin: top;
+            }
+
+            50% {
+                transform: scaleY(1);
+                transform-origin: top;
+            }
+
+            50.1% {
+                transform: scaleY(1);
+                transform-origin: bottom;
+            }
+
+            100% {
+                transform: scaleY(0);
+                transform-origin: bottom;
+            }
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #EAEAE5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(28, 25, 23, 0.1);
+            border-top-color: #1c1917;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .text-transparent-stroke {
+            color: transparent;
+            -webkit-text-stroke: 1px #1C1917;
+        }
+
+        .text-transparent-stroke-light {
+            color: transparent;
+            -webkit-text-stroke: 1px #44403c;
+        }
+
+        /* Marquee CTA */
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-marquee-container {
+            display: flex;
+            width: 200%;
+            animation: marquee 20s linear infinite;
+        }
+
+        /* Flashlight Effect Hover */
+        .flashlight-card {
+            position: relative;
+            background: #FFFFFF;
+            overflow: hidden;
+            border: 1px solid #E7E5E4;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+
+        .flashlight-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .flashlight-card::before {
+            content: "";
+            position: absolute;
+            inset: 0px;
+            background: radial-gradient(700px circle at var(--mouse-x) var(--mouse-y),
+                    rgba(0, 0, 0, 0.04),
+                    transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .flashlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Special Glow Box */
+        .glow-box-wrapper {
+            position: relative;
+            padding: 1px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0));
+        }
+
+        .glow-box-wrapper::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: inherit;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        .glow-box {
+            background: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: inherit;
+        }
+
+        /* Text Reveal Pattern (Design System) */
+        .text-reveal-wrapper {
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+            line-height: 1.1;
+            padding-bottom: 0.1em;
+        }
+
+        .text-reveal-content {
+            display: inline-block;
+            transform: translateY(115%);
+            opacity: 0;
+        }
+
+        /* Floating Icon Animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen relative">
+
+    <!-- Navbar -->
+    <nav
+        class="fixed top-0 w-full z-50 bg-white/40 backdrop-blur-xl border-b border-stone-200 transition-all duration-500 entrance-element opacity-0 -translate-y-4">
+        <div class="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 group cursor-pointer">
+                <iconify-icon class="text-2xl group-hover:rotate-180 transition-transform duration-700 text-stone-900"
+                    icon="solar:pen-linear"></iconify-icon>
+                <span class="font-bold tracking-tighter text-lg uppercase text-stone-900">Aura<span
+                        class="text-transparent-stroke">PEN</span></span>
+            </div>
+            <div class="hidden md:flex gap-8 text-xs font-mono tracking-widest uppercase text-stone-500">
+                <a class="hover:text-stone-900 transition-colors" href="#design">Design</a>
+                <a class="hover:text-stone-900 transition-colors" href="#features">Recursos</a>
+                <a class="hover:text-stone-900 transition-colors" href="#tech">Especificações</a>
+            </div>
+            <button class="btn-beam px-[1px] py-[1px] rounded-full hidden md:flex">
+                <div class="btn-beam-content px-6 py-2.5 text-[10px] font-mono uppercase tracking-widest font-bold">
+                    Comprar Agora
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Loading Screen until canvas is ready to prevent raw jumps  -->
+    <div id="preloader">
+        <div class="spinner mb-4"></div>
+        <span class="text-xs font-mono tracking-widest text-stone-500 uppercase">Afinando Performance...</span>
+    </div>
+
+    <div class="scroll-container" id="main-scroll">
+        <section class="hero-sticky w-full">
+
+            <!-- Full Screen Canvas Rendering Background -->
+            <div id="video-container" class="absolute inset-0 z-0 bg-[#EAEAE5] w-full h-full overflow-hidden">
+                <canvas id="hero-canvas"
+                    class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover pointer-events-none"
+                    style="transform: translate3d(-50%, -50%, 0);"></canvas>
+                <div class="noise opacity-[0.04]"></div>
+            </div>
+
+            <!-- Compact, Left-Aligned Text Content -->
+            <div id="hero-content"
+                class="relative z-20 w-full h-full flex flex-col items-start justify-center text-left px-8 md:px-24 mx-0 max-w-4xl pointer-events-none">
+
+                <div class="overflow-hidden mb-6 entrance-element pointer-events-auto">
+                    <span
+                        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-stone-300 bg-white/40 backdrop-blur-md text-[10px] md:text-xs font-mono uppercase tracking-widest text-[#1c1917]">
+                        <span class="w-1.5 h-1.5 bg-stone-900 rounded-full animate-pulse"></span>
+                        O Novo Padrão
+                    </span>
+                </div>
+
+                <h1 id="hero-headline"
+                    class="font-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter leading-[0.95] mb-6 text-stone-900 mix-blend-darken">
+                    A Caneta mais <br>
+                    <span class="text-stone-400">tecnológica do mundo.</span>
+                </h1>
+
+                <p
+                    class="text-base md:text-lg text-stone-500 max-w-md leading-relaxed font-light mb-10 entrance-element pointer-events-auto opacity-0 translate-y-4">
+                    Projetada com precisão para aqueles que moldam o amanhã. Experimente o equilíbrio perfeito, a mecânica fluida da tinta e um design inigualável.
+                </p>
+
+                <div
+                    class="flex flex-col sm:flex-row gap-4 entrance-element pointer-events-auto w-full max-w-md opacity-0 translate-y-4">
+                    <!-- Primary CTA -->
+                    <button class="btn-beam px-[1px] py-[1px] rounded-full lg:rounded-sm flex-1">
+                        <div
+                            class="btn-beam-content px-8 py-4 text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 hover:gap-4 transition-all w-full">
+                            <span class="font-bold">Pré-venda</span>
+                            <iconify-icon icon="solar:arrow-right-linear" class="text-base"></iconify-icon>
+                        </div>
+                    </button>
+
+                    <!-- Secondary CTA -->
+                    <button
+                        class="px-8 py-4 border border-stone-300 text-stone-900 hover:bg-white transition-colors rounded-full lg:rounded-sm font-mono text-xs uppercase tracking-widest flex items-center justify-center flex-1 w-full">
+                        Vídeo
+                    </button>
+                </div>
+
+                <div
+                    class="mt-16 flex items-center justify-start gap-12 entrance-element pointer-events-auto opacity-0 translate-y-4">
+                    <div class="flex flex-col items-start">
+                        <span class="text-3xl md:text-4xl font-display font-medium text-stone-900">9.8<span
+                                class="text-base font-mono text-stone-400">g</span></span>
+                        <span
+                            class="text-[10px] uppercase font-mono text-stone-400 mt-1 tracking-widest">Ultraleve</span>
+                    </div>
+                    <div class="w-px h-10 md:h-12 bg-stone-300"></div>
+                    <div class="flex flex-col items-start">
+                        <span class="text-3xl md:text-4xl font-display font-medium text-stone-900">0.3<span
+                                class="text-base font-mono text-stone-400">mm</span></span>
+                        <span
+                            class="text-[10px] uppercase font-mono text-stone-400 mt-1 tracking-widest">Precisão</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div id="scroll-prompt"
+                class="scroll-indicator items-center justify-center entrance-element hidden md:flex z-20 pointer-events-none opacity-0">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-[#1c1917]">Explorar</span>
+                <div class="scroll-line"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- DOBRA 2: Engenharia de Vanguarda -->
+    <section id="engineering" class="relative py-32 bg-[#FAFAF9] z-10 border-t border-stone-200">
+        <div class="max-w-[1400px] mx-auto px-6">
+            <div class="mb-20 flex flex-col items-center text-center">
+                <span
+                    class="text-xs font-mono uppercase text-stone-400 block mb-3 tracking-widest eng-reveal">Arquitetura</span>
+                <h2 class="text-5xl md:text-6xl font-semibold tracking-tighter text-stone-900 eng-reveal">Engenharia de
+                    Vanguarda.</h2>
+                <p class="text-stone-500 max-w-2xl mt-6 font-light text-lg eng-reveal">O sistema mecânico proprietário
+                    esculpido para redefinir a escrita. Um balanço absoluto entre engenharia militar aeroespacial e
+                    design minimalista suíço.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <!-- Left: Imagem da Caneta -->
+                <div class="flashlight-card rounded-3xl p-4 md:p-8 eng-image-container relative overflow-hidden"
+                    onmousemove="updateFlashlight(event, this)">
+                    <div class="absolute inset-0 bg-stone-100 z-0"></div>
+                    <img src="./aura_pen_fountain_macro_1775595086266.png" alt="Aura Pen Visão Macro Tecnológica"
+                        class="w-full h-auto rounded-xl relative z-10 shadow-lg mix-blend-multiply" />
+                </div>
+
+                <!-- Right: Características Dinâmicas -->
+                <div class="flex flex-col gap-12">
+                    <div class="eng-item flex gap-6">
+                        <span class="text-sm font-mono text-stone-400 font-bold">01</span>
+                        <div>
+                            <h3 class="text-xl font-semibold text-stone-900 mb-2">Alumínio Aeroespacial</h3>
+                            <p class="text-stone-500 font-light leading-relaxed">Corpo usinado a partir de um único
+                                bloco sólido de liga aeronáutica 7075-T6. Extrema resistência estrutural pesando menos
+                                do que imaginável.</p>
+                        </div>
+                    </div>
+
+                    <div class="eng-item flex gap-6">
+                        <span class="text-sm font-mono text-stone-400 font-bold">02</span>
+                        <div>
+                            <h3 class="text-xl font-semibold text-stone-900 mb-2">Precisão Suíça</h3>
+                            <p class="text-stone-500 font-light leading-relaxed">Mecanismo interno retrátil hiperpreciso
+                                construído com arquitetura de tinteiro moderno. Cada traço na página atua sob tensão
+                                capilar perfeita.</p>
+                        </div>
+                    </div>
+
+                    <div class="eng-item flex gap-6">
+                        <span class="text-sm font-mono text-stone-400 font-bold">03</span>
+                        <div>
+                            <h3 class="text-xl font-semibold text-stone-900 mb-2">Tinta de Nanografeno</h3>
+                            <p class="text-stone-500 font-light leading-relaxed">Cartuchos herméticos com fluidez
+                                quântica pressurizada. Escreva em qualquer ângulo com uma ponta modelada para ser
+                                inabalável no tracionamento.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOBRA 3: Impacto CTA Escuro Imersivo -->
+    <section id="cta-section" class="relative py-40 bg-[#141414] text-white z-10 overflow-hidden">
+        <div class="absolute inset-0 opacity-10"
+            style="background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 60px 60px;">
+        </div>
+
+        <!-- Floating Design System Elements -->
+        <div class="absolute top-[15%] left-[10%] text-6xl text-white/5 animate-float cta-float-item"
+            style="animation-delay: 0s;">
+            <iconify-icon icon="solar:star-fall-linear"></iconify-icon>
+        </div>
+        <div class="absolute bottom-[20%] right-[15%] text-8xl text-white/5 animate-float cta-float-item"
+            style="animation-delay: 2s;">
+            <iconify-icon icon="solar:layers-minimalistic-linear"></iconify-icon>
+        </div>
+        <div class="absolute top-[60%] left-[8%] text-4xl text-white/5 animate-float cta-float-item"
+            style="animation-delay: 1.5s;">
+            <iconify-icon icon="solar:ghost-smile-linear"></iconify-icon>
+        </div>
+
+        <!-- Background Marquee Animado -->
+        <div class="absolute top-1/2 left-0 -translate-y-1/2 w-full opacity-5 pointer-events-none z-0">
+            <div class="animate-marquee-container">
+                <div
+                    class="flex gap-16 whitespace-nowrap px-8 text-[120px] font-bold tracking-tighter uppercase leading-none">
+                    <span>Escreva o Futuro</span>
+                    <span class="text-transparent-stroke-light">Aura Pen</span>
+                    <span>Escreva o Futuro</span>
+                    <span class="text-transparent-stroke-light">Aura Pen</span>
+                </div>
+                <div
+                    class="flex gap-16 whitespace-nowrap px-8 text-[120px] font-bold tracking-tighter uppercase leading-none">
+                    <span>Escreva o Futuro</span>
+                    <span class="text-transparent-stroke-light">Aura Pen</span>
+                    <span>Escreva o Futuro</span>
+                    <span class="text-transparent-stroke-light">Aura Pen</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-[1200px] mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+
+            <h2 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8 flex flex-col gap-2">
+                <span class="text-reveal-wrapper">
+                    <span class="text-reveal-content cta-title-part text-white">Junte-se à</span>
+                </span>
+                <span class="text-reveal-wrapper">
+                    <span class="text-reveal-content cta-title-part text-stone-500">Revolução.</span>
+                </span>
+            </h2>
+
+            <p class="text-stone-400 text-lg max-w-xl mb-16 cta-reveal font-light">Reserve hoje a sua <span
+                    class="text-white font-medium">Aura Pen</span> e faça parte do seleto grupo de exploradores que
+                entendem o peso do amanhã.</p>
+
+            <div class="cta-reveal group">
+                <button
+                    class="btn-beam px-[1px] py-[1px] rounded-full scale-125 transform-gpu transition-all duration-300">
+                    <div
+                        class="btn-beam-content px-10 py-5 text-sm font-mono uppercase tracking-widest flex items-center gap-4 bg-stone-900 border-white/20">
+                        <span class="font-bold">Reserve Agora</span>
+                        <iconify-icon icon="solar:arrow-right-linear"
+                            class="text-xl group-hover:translate-x-2 transition-transform"></iconify-icon>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOBRA 4: Vídeo Background & Garantia (Glow) -->
+    <section id="warranty-section"
+        class="relative min-h-[90vh] flex items-center justify-center p-6 z-10 overflow-hidden border-t border-stone-800">
+        <!-- Native Video Background -->
+        <video autoplay loop muted playsinline
+            class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
+            <source src="./video2.mp4" type="video/mp4" />
+        </video>
+
+        <div class="absolute inset-0 bg-stone-900/60 z-0"></div>
+
+        <div class="w-full max-w-2xl mx-auto z-10 warranty-reveal">
+            <div
+                class="glow-box-wrapper shadow-[0_0_60px_rgba(255,255,255,0.05)] hover:scale-[1.02] transition-transform duration-500 hover:shadow-[0_0_80px_rgba(255,255,255,0.1)]">
+                <div class="glow-box p-10 md:p-16 flex flex-col items-center text-center gap-6 relative">
+                    <!-- Solar Icon -->
+                    <div
+                        class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center border border-white/10 mb-2">
+                        <iconify-icon class="text-3xl text-white" icon="solar:shield-check-bold-duotone"></iconify-icon>
+                    </div>
+
+                    <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight">Garantia Vitalícia.</h2>
+                    <p class="text-stone-300 text-base md:text-lg leading-relaxed max-w-lg font-light">
+                        Construída para atravessar gerações. Se por um acaso a engenharia suíça falhar em qualquer
+                        extremidade, nós trocamos a sua <b>Aura Pen</b> imediatamente. Sem perguntas.
+                    </p>
+
+                    <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-4"></div>
+
+                    <div
+                        class="flex items-center gap-3 text-xs text-stone-400 font-mono uppercase tracking-widest bg-stone-900/50 px-4 py-2 rounded-full border border-white/5">
+                        <span
+                            class="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.5)]"></span>
+                        Programa Aura Care Ativo
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            })
+
+            lenis.on('scroll', ScrollTrigger.update)
+
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000)
+            })
+
+            gsap.ticker.lagSmoothing(0)
+
+            const texts = new SplitType('#hero-headline', { types: 'words, chars' })
+            gsap.set('.char', { y: '115%' }); // reset manually
+
+            function playEntranceAnim() {
+                const tlEntrance = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+                tlEntrance.to('.char', {
+                    y: '0%',
+                    opacity: 1,
+                    duration: 1.2,
+                    stagger: 0.03,
+                    delay: 0.1
+                })
+                    .to('.entrance-element', {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1.5,
+                        stagger: 0.1
+                    }, "-=0.8");
+            }
+
+            // ======================================
+            // CANVAS IMAGE SEQUENCE SCRUBBING
+            // ======================================
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d', { alpha: false });
+
+            const frameCount = 192; // Total de frames na pasta
+            const currentFrame = index => (
+                `./video_frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
+            );
+
+            const images = [];
+            const heroObj = { frame: 0 };
+
+            function resizeCanvasToImage(img) {
+                canvas.width = img.width;
+                canvas.height = img.height;
+            }
+
+            let loadedImages = 0;
+
+            // Inicia o loop de load das imagens
+            for (let i = 0; i < frameCount; i++) {
+                const img = new Image();
+                img.src = currentFrame(i);
+                img.onload = () => {
+                    loadedImages++;
+
+                    // Desenha o primeiro frame imediatamente como "capa"
+                    if (i === 0) {
+                        resizeCanvasToImage(img);
+                        ctx.drawImage(img, 0, 0);
+                    }
+
+                    // Atualiza texto do preloader se quiser (opcional)
+                    const progressStr = Math.floor((loadedImages / frameCount) * 100) + '%';
+                    const preloaderText = document.querySelector('#preloader span');
+                    if (preloaderText) preloaderText.innerText = `Carregando Vídeo... ${progressStr}`;
+
+                    if (loadedImages === frameCount) {
+                        initCanvasSequence();
+                    }
+                };
+                images.push(img);
+            }
+
+            // Garante que o canvas redimensione se a janela mudar
+            window.addEventListener('resize', () => {
+                if (images[0]) resizeCanvasToImage(images[0]);
+                if (images[heroObj.frame]) {
+                    ctx.drawImage(images[heroObj.frame], 0, 0, canvas.width, canvas.height);
+                }
+            });
+
+            function initCanvasSequence() {
+                // Esconde o Preloader
+                gsap.to('#preloader', {
+                    opacity: 0, duration: 0.5, onComplete: () => {
+                        document.getElementById('preloader').style.display = 'none';
+                        canvas.style.opacity = 1;
+                        playEntranceAnim();
+                    }
+                });
+
+                let tlSequence = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#main-scroll",
+                        start: "top top",
+                        end: "+=300%",
+                        scrub: 1.5, // Suavidade (inertia)
+                        pin: false,
+                    }
+                });
+
+                // 1. Anima o index do frame baseado no scroll
+                tlSequence.to(heroObj, {
+                    frame: frameCount - 1,
+                    snap: "frame",
+                    ease: "none",
+                    duration: 1, // Duração base para scroll
+                    onUpdate: () => {
+                        // Desenha o frame atual
+                        ctx.drawImage(images[heroObj.frame], 0, 0, canvas.width, canvas.height);
+                    }
+                }, 0);
+
+                // 2. Parallax fade do conteúdo de texto em cima
+                tlSequence.to(['#hero-content', '#scroll-prompt'], {
+                    opacity: 0,
+                    x: -40,
+                    scale: 0.98,
+                    duration: 0.4, // Fading out nos primeiros 40% do scroll
+                    ease: "power2.inOut"
+                }, 0);
+            }
+
+        });
+
+        // ======================================
+        // LOGIC FOR FOLDS 2 AND 3
+        // ======================================
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // Animação da Dobra 2 (Engenharia)
+            gsap.set('.eng-reveal', { y: 40, opacity: 0 });
+            gsap.set('.eng-item', { x: 50, opacity: 0 });
+            gsap.set('.eng-image-container', { scale: 0.9, opacity: 0 });
+
+            ScrollTrigger.create({
+                trigger: '#engineering',
+                start: 'top 75%',
+                onEnter: () => {
+                    gsap.to('.eng-reveal', { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: 'power3.out' });
+                    gsap.to('.eng-image-container', { scale: 1, opacity: 1, duration: 1.2, ease: 'power3.out', delay: 0.2 });
+                    gsap.to('.eng-item', { x: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: 'power3.out', delay: 0.3 });
+                }
+            });
+
+            // Animação da Dobra 3 (CTA Submundo)
+            gsap.set('.cta-reveal', { y: 30, opacity: 0 });
+            gsap.set('.cta-float-item', { scale: 0, opacity: 0, rotation: -30 });
+
+            ScrollTrigger.create({
+                trigger: '#cta-section',
+                start: 'top 65%',
+                onEnter: () => {
+                    const ctaTl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+                    // Reveal title letters sequentially (Text Reveal Pattern)
+                    ctaTl.to('.cta-title-part', { y: 0, opacity: 1, duration: 1.2, stagger: 0.15 })
+                        // Fade in the subtitle and button
+                        .to('.cta-reveal', { y: 0, opacity: 1, duration: 1, stagger: 0.2 }, "-=0.8")
+                        // Pop in the floating background elements
+                        .to('.cta-float-item', { scale: 1, opacity: 1, rotation: 0, duration: 1.5, stagger: 0.1, ease: 'back.out(1.5)' }, "-=1");
+                }
+            });
+
+            // Animação da Dobra 4 (Garantia Glow)
+            gsap.set('.warranty-reveal', { y: 60, opacity: 0, scale: 0.95 });
+
+            ScrollTrigger.create({
+                trigger: '#warranty-section',
+                start: 'top 50%',
+                onEnter: () => {
+                    gsap.to('.warranty-reveal', { y: 0, opacity: 1, scale: 1, duration: 1.5, ease: 'power4.out' });
+                }
+            });
+
+        });
+
+        // Flashlight Logic Tracker
+        function updateFlashlight(e, element) {
+            const rect = element.getBoundingClientRect();
+            element.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            element.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        }
+    </script>
+</body>
+
+</html>
