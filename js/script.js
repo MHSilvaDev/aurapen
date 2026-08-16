@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const frameCount = 192; // Total de frames na pasta
             const currentFrame = index => (
-                `./video_frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
+                `./assets/video_frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
             );
 
             const images = [];

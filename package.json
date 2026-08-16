@@ -1,0 +1,26 @@
+{
+  "name": "aurapen",
+  "version": "1.0.0",
+  "description": "Uma landing page conceitual e altamente interativa desenvolvida para demonstrar técnicas avançadas de Front-End, com foco em animações de alta performance, manipulação de DOM e experiências imersivas de UI/UX.",
+  "main": "script.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind-input.css -o ./css/tailwind-built.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind-input.css -o ./css/tailwind-built.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MHSilvaDev/aurapen.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MHSilvaDev/aurapen/issues"
+  },
+  "homepage": "https://github.com/MHSilvaDev/aurapen#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  },
+  "type": "commonjs"
+}

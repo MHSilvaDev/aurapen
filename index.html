@@ -14,7 +14,6 @@
         rel="stylesheet">
 
     <!-- Dependencies -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -24,36 +23,9 @@
     <!-- SplitType -->
     <script src="https://unpkg.com/split-type"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        stone: {
-                            50: '#fafaf9',
-                            100: '#f5f5f4',
-                            200: '#e7e5e4',
-                            300: '#d6d3d1',
-                            400: '#a8a29e',
-                            500: '#78716c',
-                            600: '#57534e',
-                            700: '#44403c',
-                            800: '#292524',
-                            900: '#1c1917',
-                        },
-                        'surface-light': '#EAEAE5',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <link rel="stylesheet" href="./style.css">
+    <!-- Tailwind CSS (build local, gerado via `npm run build:css`) -->
+    <link rel="stylesheet" href="./css/tailwind-built.css">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body class="antialiased min-h-screen relative">
@@ -184,7 +156,7 @@
                 <div class="flashlight-card rounded-3xl p-4 md:p-8 eng-image-container relative overflow-hidden"
                     onmousemove="updateFlashlight(event, this)">
                     <div class="absolute inset-0 bg-stone-100 z-0"></div>
-                    <img src="./aura_pen_fountain_macro_1775595086266.png" alt="Aura Pen Visão Macro Tecnológica"
+                    <img src="./assets/images/aura_pen_fountain_macro_1775595086266.png" alt="Aura Pen Visão Macro Tecnológica"
                         class="w-full h-auto rounded-xl relative z-10 shadow-lg mix-blend-multiply" />
                 </div>
 
@@ -299,7 +271,7 @@
         <!-- Native Video Background -->
         <video autoplay loop muted playsinline
             class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
-            <source src="./video2.mp4" type="video/mp4" />
+            <source src="./assets/video/video2.mp4" type="video/mp4" />
         </video>
 
         <div class="absolute inset-0 bg-stone-900/60 z-0"></div>
@@ -333,7 +305,7 @@
         </div>
     </section>
 
-    <script src="./script.js"></script>
+    <script src="./js/script.js"></script>
 </body>
 
 </html>
