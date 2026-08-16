@@ -21,6 +21,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
             gsap.ticker.lagSmoothing(0)
 
+            // ======================================
+            // SMOOTH SCROLL PARA LINKS ÂNCORA (menu, footer, botão "Vídeo")
+            // ======================================
+            document.querySelectorAll('a[href^="#"]').forEach((link) => {
+                const targetId = link.getAttribute('href');
+                if (targetId.length <= 1) return; // ignora href="#" (placeholders de redes sociais)
+
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // "#design" fica na section sticky do hero: a posição medida via
+                    // getBoundingClientRect/offsetTop não é confiável enquanto ela está pinada,
+                    // então tratamos como "voltar ao topo" em vez de mirar o elemento.
+                    if (targetId === '#design') {
+                        lenis.scrollTo(0);
+                        return;
+                    }
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        lenis.scrollTo(target, { offset: -96 });
+                    }
+                });
+            });
+
+            const videoCtaBtn = document.getElementById('video-cta-btn');
+            if (videoCtaBtn) {
+                videoCtaBtn.addEventListener('click', () => {
+                    lenis.scrollTo('#warranty-section', { offset: -96 });
+                });
+            }
+
             const texts = new SplitType('#hero-headline', { types: 'words, chars' })
             gsap.set('.char', { y: '115%' }); // reset manually
 

@@ -6,6 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aura Pen - O Futuro da Escrita</title>
 
+    <!-- SEO -->
+    <meta name="description"
+        content="Aura Pen: caneta tinteiro premium em alumínio aeroespacial 7075-T6, precisão suíça de 0,3mm e garantia vitalícia. O novo padrão da escrita de luxo.">
+    <meta name="keywords"
+        content="caneta premium, caneta tinteiro, escrita de luxo, canetas artesanais, caneta de luxo, caneta executiva, alumínio aeroespacial, design suíço, papelaria premium">
+    <meta name="author" content="Aura Pen">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1c1917">
+    <link rel="canonical" href="https://www.aurapen.com.br/">
+    <link rel="icon" type="image/svg+xml" href="./assets/images/favicon.svg">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Aura Pen">
+    <meta property="og:title" content="Aura Pen - O Futuro da Escrita">
+    <meta property="og:description"
+        content="Aura Pen: caneta tinteiro premium em alumínio aeroespacial 7075-T6, precisão suíça de 0,3mm e garantia vitalícia. O novo padrão da escrita de luxo.">
+    <meta property="og:image" content="https://www.aurapen.com.br/assets/images/aura_pen_fountain_macro_1775595086266.png">
+    <meta property="og:url" content="https://www.aurapen.com.br/">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Aura Pen - O Futuro da Escrita">
+    <meta name="twitter:description"
+        content="Aura Pen: caneta tinteiro premium em alumínio aeroespacial 7075-T6, precisão suíça de 0,3mm e garantia vitalícia. O novo padrão da escrita de luxo.">
+    <meta name="twitter:image" content="https://www.aurapen.com.br/assets/images/aura_pen_fountain_macro_1775595086266.png">
+
+    <!-- Dados estruturados (Schema.org). Campos "offers" (preço/SKU/disponibilidade) e "aggregateRating"/"review"
+         foram propositalmente omitidos: preencha com dados reais antes de publicar para um cliente real. -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Aura Pen",
+        "description": "Caneta tinteiro premium com corpo em alumínio aeroespacial 7075-T6, mecanismo de precisão suíça e tinta de nanografeno. Garantia vitalícia.",
+        "image": "https://www.aurapen.com.br/assets/images/aura_pen_fountain_macro_1775595086266.png",
+        "url": "https://www.aurapen.com.br/",
+        "brand": {
+            "@type": "Organization",
+            "name": "Aura Pen"
+        }
+    }
+    </script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,14 +87,15 @@
             </div>
             <div class="hidden md:flex gap-8 text-xs font-mono tracking-widest uppercase text-stone-500">
                 <a class="hover:text-stone-900 transition-colors" href="#design">Design</a>
-                <a class="hover:text-stone-900 transition-colors" href="#features">Recursos</a>
-                <a class="hover:text-stone-900 transition-colors" href="#tech">Especificações</a>
+                <a class="hover:text-stone-900 transition-colors" href="#engineering">Recursos</a>
+                <a class="hover:text-stone-900 transition-colors" href="#warranty-section">Garantia</a>
             </div>
-            <button class="btn-beam px-[1px] py-[1px] rounded-full hidden md:flex">
+            <a href="https://wa.me/5534999147815?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20a%20Aura%20Pen%20e%20fazer%20minha%20reserva."
+                target="_blank" rel="noopener" class="btn-beam px-[1px] py-[1px] rounded-full hidden md:flex">
                 <div class="btn-beam-content px-6 py-2.5 text-[10px] font-mono uppercase tracking-widest font-bold">
                     Comprar Agora
                 </div>
-            </button>
+            </a>
         </div>
     </nav>
 
@@ -60,11 +106,12 @@
     </div>
 
     <div class="scroll-container" id="main-scroll">
-        <section class="hero-sticky w-full">
+        <section id="design" class="hero-sticky w-full">
 
             <!-- Full Screen Canvas Rendering Background -->
             <div id="video-container" class="absolute inset-0 z-0 bg-[#EAEAE5] w-full h-full overflow-hidden">
-                <canvas id="hero-canvas"
+                <canvas id="hero-canvas" role="img"
+                    aria-label="Sequência animada em vídeo mostrando a caneta Aura Pen em rotação, controlada pela rolagem da página"
                     class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover pointer-events-none"
                     style="transform: translate3d(-50%, -50%, 0);"></canvas>
                 <div class="noise opacity-[0.04]"></div>
@@ -96,16 +143,18 @@
                 <div
                     class="flex flex-col sm:flex-row gap-4 entrance-element pointer-events-auto w-full max-w-md opacity-0 translate-y-4">
                     <!-- Primary CTA -->
-                    <button class="btn-beam px-[1px] py-[1px] rounded-full lg:rounded-sm flex-1">
+                    <a href="https://wa.me/5534999147815?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20a%20Aura%20Pen%20e%20fazer%20minha%20reserva."
+                        target="_blank" rel="noopener"
+                        class="btn-beam px-[1px] py-[1px] rounded-full lg:rounded-sm flex-1">
                         <div
                             class="btn-beam-content px-8 py-4 text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 hover:gap-4 transition-all w-full">
                             <span class="font-bold">Pré-venda</span>
                             <iconify-icon icon="solar:arrow-right-linear" class="text-base"></iconify-icon>
                         </div>
-                    </button>
+                    </a>
 
-                    <!-- Secondary CTA -->
-                    <button
+                    <!-- Secondary CTA: rola até o vídeo de fundo em #warranty-section -->
+                    <button id="video-cta-btn"
                         class="px-8 py-4 border border-stone-300 text-stone-900 hover:bg-white transition-colors rounded-full lg:rounded-sm font-mono text-xs uppercase tracking-widest flex items-center justify-center flex-1 w-full">
                         Vídeo
                     </button>
@@ -156,7 +205,8 @@
                 <div class="flashlight-card rounded-3xl p-4 md:p-8 eng-image-container relative overflow-hidden"
                     onmousemove="updateFlashlight(event, this)">
                     <div class="absolute inset-0 bg-stone-100 z-0"></div>
-                    <img src="./assets/images/aura_pen_fountain_macro_1775595086266.png" alt="Aura Pen Visão Macro Tecnológica"
+                    <img src="./assets/images/aura_pen_fountain_macro_1775595086266.png"
+                        alt="Fotografia macro da caneta tinteiro Aura Pen, destacando o corpo em alumínio aeroespacial e o acabamento de precisão suíça"
                         class="w-full h-auto rounded-xl relative z-10 shadow-lg mix-blend-multiply" />
                 </div>
 
@@ -252,7 +302,8 @@
                 entendem o peso do amanhã.</p>
 
             <div class="cta-reveal group">
-                <button
+                <a href="https://wa.me/5534999147815?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20a%20Aura%20Pen%20e%20fazer%20minha%20reserva."
+                    target="_blank" rel="noopener"
                     class="btn-beam px-[1px] py-[1px] rounded-full scale-125 transform-gpu transition-all duration-300">
                     <div
                         class="btn-beam-content px-10 py-5 text-sm font-mono uppercase tracking-widest flex items-center gap-4 bg-stone-900 border-white/20">
@@ -260,7 +311,7 @@
                         <iconify-icon icon="solar:arrow-right-linear"
                             class="text-xl group-hover:translate-x-2 transition-transform"></iconify-icon>
                     </div>
-                </button>
+                </a>
             </div>
         </div>
     </section>
@@ -304,6 +355,67 @@
             </div>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="relative bg-[#141414] text-white z-10 border-t border-white/10">
+        <div class="max-w-[1400px] mx-auto px-6 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <!-- Logo + tagline -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                        <iconify-icon class="text-2xl text-white" icon="solar:pen-linear"></iconify-icon>
+                        <span class="font-bold tracking-tighter text-lg uppercase text-white">Aura<span
+                                class="text-transparent-stroke-light">PEN</span></span>
+                    </div>
+                    <p class="text-stone-400 text-sm font-light max-w-xs leading-relaxed">O novo padrão da escrita de
+                        luxo. Precisão suíça, engenharia aeroespacial.</p>
+                </div>
+
+                <!-- Nav links -->
+                <div class="flex flex-col gap-4">
+                    <span class="text-xs font-mono uppercase tracking-widest text-stone-500">Navegação</span>
+                    <nav class="flex flex-col gap-3 text-xs font-mono uppercase tracking-widest text-stone-300">
+                        <a href="#design" class="hover:text-white transition-colors w-fit">Design</a>
+                        <a href="#engineering" class="hover:text-white transition-colors w-fit">Recursos</a>
+                        <a href="#warranty-section" class="hover:text-white transition-colors w-fit">Garantia</a>
+                    </nav>
+                </div>
+
+                <!-- Contato -->
+                <div class="flex flex-col gap-4">
+                    <span class="text-xs font-mono uppercase tracking-widest text-stone-500">Contato</span>
+                    <!-- Telefone e e-mail placeholder: substituir por dados reais antes de publicar para cliente -->
+                    <a href="tel:+5534999147815"
+                        class="text-stone-300 hover:text-white transition-colors text-sm w-fit">(34) 99914-7815</a>
+                    <a href="mailto:contato@aurapen.com.br"
+                        class="text-stone-300 hover:text-white transition-colors text-sm w-fit">contato@aurapen.com.br</a>
+                    <!-- Links de redes sociais placeholder (href="#"): substituir pelas URLs reais antes de publicar -->
+                    <div class="flex items-center gap-4 mt-2">
+                        <a href="#" class="text-stone-400 hover:text-white transition-colors text-xl"
+                            aria-label="Instagram da Aura Pen">
+                            <iconify-icon icon="mdi:instagram"></iconify-icon>
+                        </a>
+                        <a href="#" class="text-stone-400 hover:text-white transition-colors text-xl"
+                            aria-label="Facebook da Aura Pen">
+                            <iconify-icon icon="mdi:facebook"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <span class="text-xs font-mono text-stone-500 tracking-widest text-center">© 2026 Aura Pen · Todos os
+                    direitos reservados.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão flutuante do WhatsApp -->
+    <a href="https://wa.me/5534999147815?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20a%20Aura%20Pen." target="_blank"
+        rel="noopener" aria-label="Fale conosco pelo WhatsApp"
+        class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg shadow-black/30 hover:scale-110 transition-transform duration-300">
+        <iconify-icon icon="mdi:whatsapp" class="text-3xl text-white"></iconify-icon>
+    </a>
 
     <script src="./js/script.js"></script>
 </body>
